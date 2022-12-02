@@ -1,7 +1,4 @@
-from typing import Generator
-
-
-def total_score(data: Generator[list[str]]):
+def total_score_1(data: list[list[str]]) -> int:
     points = {
         "A": 1,
         "B": 2,
@@ -26,9 +23,33 @@ def total_score(data: Generator[list[str]]):
     return score
 
 
-def read_data() -> Generator[list[str]]:
+def total_score_2(data: list[list[str]]) -> int:
+    points = {
+        "A": 0,
+        "B": 1,
+        "C": 2,
+        "X": 1,
+        "Y": 0,
+        "Z": 2,
+    }
+    score = 0
+    for row in data:
+        a, exp = row
+        if points[exp] == 0:
+            # it's a draw
+            score += 3 + points[a] + 1
+        elif points[exp] == 2:
+            # won
+            score += 6 + (points[a] + 1) % 3 + 1
+        else:
+            # lose
+            score += (points[a] - 1) % 3 + 1
+    return score
+
+
+def read_data() -> list[list[str]]:
     with open("./input.txt", "r") as f:
-        return (row.strip().split(" ") for row in f.readlines())
+        return [row.strip().split(" ") for row in f.readlines()]
 
 
 if __name__ == "__main__":
@@ -37,5 +58,5 @@ if __name__ == "__main__":
         ("B", "X"),
         ("C", "Z"),
     ]
-    data = read_data()
-    print(total_score(data))
+    dataset = read_data()
+    print(total_score_2(dataset))
