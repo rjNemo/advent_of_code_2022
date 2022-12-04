@@ -1,3 +1,6 @@
+from common.file import read_data
+
+
 def total_score_1(data: list[list[str]]) -> int:
     points = {
         "A": 1,
@@ -45,11 +48,6 @@ def total_score_2(data: list[list[str]]) -> int:
             # lose
             score += (points[a] - 1) % 3 + 1
     return score
-
-
-def read_data() -> list[list[str]]:
-    with open("./input.txt", "r") as f:
-        return [row.strip().split(" ") for row in f.readlines()]
 
 
 if __name__ == "__main__":
