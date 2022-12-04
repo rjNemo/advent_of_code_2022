@@ -1,3 +1,5 @@
+from typing import Callable, Iterable
+
 from common.file import read_data
 
 test_dataset = [
@@ -11,20 +13,22 @@ test_dataset = [
 
 
 def find_overlapping_assignments_1(data: list[str]) -> int:
-    # iterate over  the data, for each line
-    counter = 0
-    for line in data:
-        # split the ','
-        a, b = line.strip().split(",")
-        start_a, end_a = [int(x) for x in a.split("-")]
-        int_a = range(start_a, end_a + 1)
-        start_b, end_b = [int(x) for x in b.split("-")]
-        int_b = range(start_b, end_b + 1)
-        # if 1 interval in the other increment the counter
-        if all(x in int_b for x in int_a) or all(x in int_a for x in int_b):
-            counter += 1
-    # return the counter
-    return counter
+    return sum(process(line, all) for line in data)
+
+
+def find_overlapping_assignments_2(data: list[str]) -> int:
+    return sum(process(line, any) for line in data)
+
+
+def process(line: str, func: Callable[[Iterable], bool]) -> int:
+    a, b = line.strip().split(",")
+
+    start_a, end_a = [int(x) for x in a.split("-")]
+    int_a = range(start_a, end_a + 1)
+    start_b, end_b = [int(x) for x in b.split("-")]
+    int_b = range(start_b, end_b + 1)
+
+    return int(func(x in int_b for x in int_a) or func(x in int_a for x in int_b))
 
 
 if __name__ == "__main__":
@@ -32,6 +36,6 @@ if __name__ == "__main__":
 
     res = find_overlapping_assignments_1(dataset)
     assert res == 2, f"{res} is not the right value"
-    #
-    # res = priority_shared_items_sum_2(dataset)
-    # assert res == 70, f"{res} is not the right value"
+
+    res = find_overlapping_assignments_2(dataset)
+    assert res == 4, f"{res} is not the right value"
