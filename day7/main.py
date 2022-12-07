@@ -5,6 +5,8 @@ from common.file import read_data
 
 DIRECTORY = "directory"
 FILE = "file"
+TOTAL_SPACE = 70_000_000
+UPDATE_SIZE = 30_000_000
 
 test_data = [
     "$ cd /",
@@ -79,11 +81,11 @@ def move_to(tree: Node, directory: str) -> Node:
     return [node for node in tree.children if node.name == directory][0]
 
 
-def build_tree(data: list[str]) -> int:
+def build_tree(data: list[str]) -> list[Node]:
     root = Node(node_type=DIRECTORY, name="/")
     current = root
 
-    directories = []
+    directories = [root]
 
     i = 1
     while i < len(data[1:]):
@@ -99,11 +101,18 @@ def build_tree(data: list[str]) -> int:
                     directories.append(leaf)
                 current.add(leaf)
                 i += 1
-    return sum(directory.size for directory in directories if directory.size < 100_000)
+    return directories
 
 
 def total_files_size(data: list[str]) -> int:
-    return build_tree(data)
+    dirs = build_tree(data)
+    return sum(directory.size for directory in dirs if directory.size < 100_000)
+
+
+def smallest_directory_to_delete(data: list[str]) -> int:
+    dirs = build_tree(data)
+    dirs.sort(key=lambda x: x.size)
+    return [d.size for d in dirs if (TOTAL_SPACE - dirs[-1].size + d.size) > UPDATE_SIZE][0]
 
 
 if __name__ == "__main__":
@@ -112,4 +121,9 @@ if __name__ == "__main__":
     res = total_files_size(test_data)
     assert res == 95437, f"{res} is not the right value, want 95437"
 
-    print(total_files_size(dataset))
+    print(f"Part 1 solution: {total_files_size(dataset)}")
+
+    res = smallest_directory_to_delete(test_data)
+    assert res == 24933642, f"{res} is not the right value, want 24933642"
+
+    print(f"Part 2 solution: {smallest_directory_to_delete(dataset)}")
